@@ -4,8 +4,9 @@ import { Observable } from 'rxjs';
 import { Product } from '../models/product';
 
 @Injectable({ providedIn: 'root' })
+
 export class ApiService {
-  private apiUrl = 'http://localhost:5000/api'; // Adjust port if needed
+  private apiUrl = 'http://localhost:5197/api'; // Adjust port if needed
 
   constructor(private http: HttpClient) { }
 

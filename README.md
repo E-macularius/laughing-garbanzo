@@ -13,8 +13,8 @@ A full-stack web application for managing product inventory featuring specific c
 **Backend:**
 1.  Navigate to `InventoryApi`.
 2.  Run `dotnet run`.
-3.  API will launch at `http://localhost:5000` (or similar).
-4.  Swagger UI available at `/swagger/index.html`.
+3.  API will launch at `http://localhost:5197`.
+4.  OpenAPI document available at `/openapi/v1.json`.
 5.  *Note:* Database is automatically created and seeded on first run in `inventory.db`.
 
 **Frontend:**
@@ -54,3 +54,4 @@ Added indexes in `OnModelCreating`:
 ## If I had more time
 
 - add HTTPS redirect
+- consolidate Create and Update DTOs
