@@ -5,53 +5,101 @@ A full-stack web application for managing product inventory featuring specific c
 ## 1. Quick Start
 
 ### Prerequisites
-* .NET 8 SDK
-* Node.js & npm
+
+- .NET v10 SDK
+- Node.js v24.11.1
+- npm v11.6.2
+- Angular v20
 
 ### Setup & Run
 
 **Backend:**
-1.  Navigate to `InventoryApi`.
-2.  Run `dotnet run`.
-3.  API will launch at `http://localhost:5197`.
-4.  OpenAPI document available at `/openapi/v1.json`.
-5.  *Note:* Database is automatically created and seeded on first run in `inventory.db`.
+
+1. Navigate to `InventoryApi`.
+1. Run `dotnet run`.
+1. API will launch at `http://localhost:5197`.
+1. OpenAPI document available at `/openapi/v1.json`.
+1. *Note:* Database is automatically created and seeded on first run in `inventory.db`.
 
 **Frontend:**
-1.  Navigate to `inventory-app`.
-2.  Run `npm install`.
-3.  Run `ng serve -o`.
-4.  Frontend will launch at `http://localhost:4200`.
+
+1. Navigate to `inventory-app`.
+1. Run `npm install`.
+1. Run `ng serve -o`.
+1. Frontend will launch at `http://localhost:4200`.
 
 ## 2. Architecture
 
-* **Backend:** C# .NET Web API following **Clean Architecture principles**.
-* **Database:** SQLite using **Entity Framework Core**.
-* **Frontend:** Angular (Single Page Application).
+- Standalone back end web API
+  - Requests are handled by the Controller
+  - Controller determines which Service to call and passes along input DTOs if appropriate
+  - Service layer interacts directly with DbContext using LINQ queries
+  - Service layer replies with new DTOs reflecting the most current state of the database
+  - Database is built using Entity Framework
+
+- Angular web client communicates with the backend using REST endpoints.
+
+### Database Schema
+
+1. Product table
+    - integer Id
+    - text Name
+    - text Description
+    - text Price
+    - integer StockQuantity
+    - text CreatedDate
+    - integer IsActive
+    - integer Category Id (Foreign Key)
+
+1. Category table
+    - integer Id
+    - text Name
+    - text Description
+    - integer IsActive
+
+### Technologies
+
+- **Backend:** C# .NET Web API
+- **Database:** SQLite managed with Entity Framework
+- **Frontend:** Angular (Single Page Application)
 
 ## 3. Design Decisions
 
-### Clean Architecture (Services vs Repositories)
-I utilized a **Service Layer pattern** injecting the `DbContext` directly.
-* **Decision:** While the Repository pattern is popular, EF Core's `DbContext` is already a Unit of Work/Repository abstraction. For a project of this scope, adding a generic repository layer often adds unnecessary abstraction.
-* **Benefit:** Keeps code concise while still separating Controllers (Presentation) from Business Logic (Services).
-* **DI:** Services are injected into Controllers via Constructor Injection.
+### Single Responsibility
 
-### EF Core & Optimization
-* **Reads:** Used `.AsNoTracking()` for GET requests to improve performance by bypassing the change tracker.
-* **N+1 Prevention:** Used `.Include(p => p.Category)` to eager load related data in a single query.
-* **Analytics:** The Category Summary is generated using a single SQL aggregation query via Linq `.Select()` projection, rather than fetching all products into memory and calculating in C#.
+Product and Category actions are separated into their own services.
 
-### Database Indexing
-Added indexes in `OnModelCreating`:
-1.  `Product.CategoryId`: Essential for Foreign Key lookups and joining tables.
-2.  `Product.IsActive`: Since the API heavily relies on soft deletes, almost every query filters by `IsActive`. This index speeds up those filters.
+### Dependency Inversion
 
-### Assumptions & Trade-offs
-* **Soft Delete:** Deleted items remain in the DB but are flagged `IsActive = false`. Unique constraints (like unique names) might conflict with deleted items if not handled carefully (handled here by ignoring uniqueness for simplicity).
-* **Security:** No Authentication/Authorization implemented as per requirements.
+Controllers interact with the Service Layer via Interfaces so that the individual Services can change without impacting the Controllers directly.
 
-## If I had more time
+### EF Core and query optimization
 
-- add HTTPS redirect
-- consolidate Create and Update DTOs
+I defined a code-first database and used LINQ to query the database. I did not do any additional query optimization outside of Linq and using .AsNoTracking() when we are getting data and not making any changes to the database.
+
+### Complex endpoint: Category Analytics
+
+I chose to work on Category Analytics because the capability for Complex Search can be handled by other products and does not need to be a core feature for this webAPI. Also, performing math on database values is generally easier to implement than a robust search solution.
+
+### Not using a Repository
+
+I decided not to create an explicit Repository pattern because we did not need any capabilities that DbContext couldn't handle and hoped that it would take less time to use DbContext directly instead of creating a Repository layer (this is also the method I am more familiar with). This has the trade-off of making it harder to change our database technology in the future as our Service layer would also have to be changed.
+
+### Index strategy
+
+I kept the suggested Product.CategoryId index since the Category is always returned and the Product.IsActive index as that is checked for our data retrievals, but I did not explore if there were any further query optimmizations in this case.
+
+## 4. What I Would Do With More Time
+
+- The Create/Update methods need further refinement to handle malformed DTOs.
+- More specificity around which fields are actually required would let us handle intermediate cases when a new Product or Category might be in the process of being created but we don't have all of the information yet.
+- If this ends up being hosted on Azure, Search can be integrated by adding a service to talk to Azure Search. We would then also have to expand our services to update the Azure Search Index whenever we're updating the database, depending on what data we want to make available.
+- Logging for both errors and user experience, tracking the user, what they were doing, how long the request took, and what errors may have appeared.
+
+## 5. Assumptions & Trade-offs
+
+- Products would only have 1 Category. Any Products which would fit in multiple Categories would require refactoring our Entity model.
+- Products are only soft deleted, which means our database may grow indefinitely.
+- No network latency between the frontend client and backend api. I would have to add support for retries or handshakes when transmitting data if the network turns out to be inconsistent.
+- No security for our endpoints means anybody can change the database. This works for a local proof-of-concept, but a full authentication scheme with OAuth and defined roles for each of our Controllers will be necessary for Production.
+- Similarly, Production would require running everything over an encrypted HTTPS connection.
