@@ -50,3 +50,7 @@ Added indexes in `OnModelCreating`:
 ### Assumptions & Trade-offs
 * **Soft Delete:** Deleted items remain in the DB but are flagged `IsActive = false`. Unique constraints (like unique names) might conflict with deleted items if not handled carefully (handled here by ignoring uniqueness for simplicity).
 * **Security:** No Authentication/Authorization implemented as per requirements.
+
+## If I had more time
+
+- run on hTTPS
