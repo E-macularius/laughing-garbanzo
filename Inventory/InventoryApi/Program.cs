@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add Services
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen();
+builder.Services.AddOpenApi();
 
 // DB Context
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -19,7 +19,8 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 // CORS (Allow Angular)
-builder.Services.AddCors(options => {
+builder.Services.AddCors(options =>
+{
     options.AddPolicy("AllowAngular",
         b => b.WithOrigins("http://localhost:4200")
               .AllowAnyMethod()
@@ -40,8 +41,7 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
-    //app.UseSwagger();
-    //app.UseSwaggerUI();
+    app.MapOpenApi();
 }
 
 app.UseCors("AllowAngular");

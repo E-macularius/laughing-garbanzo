@@ -53,4 +53,4 @@ Added indexes in `OnModelCreating`:
 
 ## If I had more time
 
-- run on hTTPS
+- add HTTPS redirect
