@@ -5,11 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InventoryApi.Services
 {
-    public class CategoryService : ICategoryService
+    public class CategoryService(AppDbContext context) : ICategoryService
     {
-        private readonly AppDbContext _context;
-
-        public CategoryService(AppDbContext context) { _context = context; }
+        private readonly AppDbContext _context = context;
 
         public async Task<IEnumerable<CategoryDto>> GetAllAsync()
         {
@@ -35,20 +33,20 @@ namespace InventoryApi.Services
                 .AsNoTracking()
                 .Where(c => c.Id == id)
                 .Select(c => new CategorySummaryDto
-                {
-                    CategoryId = c.Id,
-                    CategoryName = c.Name,
-                    CategoryDescription = c.Description,
-                    TotalProducts = c.Products.Count(),
-                    ActiveProducts = c.Products.Count(p => p.IsActive),
-                    AveragePrice = c.Products.Any() ? c.Products.Average(p => p.Price) : 0,
-                    TotalInventoryValue = c.Products.Sum(p => p.Price * p.StockQuantity),
-                    PriceRange = new PriceRange(
+                (
+                    c.Id,
+                    c.Name,
+                    c.Description,
+                    c.Products.Count,
+                    c.Products.Count(p => p.IsActive),
+                    c.Products.Any() ? c.Products.Average(p => p.Price) : 0,
+                    c.Products.Sum(p => p.Price * p.StockQuantity),
+                    new PriceRange(
                         c.Products.Any() ? c.Products.Min(p => p.Price) : 0,
                         c.Products.Any() ? c.Products.Max(p => p.Price) : 0
                     ),
-                    OutOfStockCount = c.Products.Count(p => p.StockQuantity == 0)
-                })
+                    c.Products.Count(p => p.StockQuantity == 0)
+                ))
                 .FirstOrDefaultAsync();
 
             return summary;

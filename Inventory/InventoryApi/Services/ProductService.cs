@@ -5,14 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InventoryApi.Services
 {
-    public class ProductService : IProductService
+    public class ProductService(AppDbContext context) : IProductService
     {
-        private readonly AppDbContext _context;
-
-        public ProductService(AppDbContext context)
-        {
-            _context = context;
-        }
+        private readonly AppDbContext _context = context;
 
         public async Task<IEnumerable<ProductDto>> GetAllAsync()
         {
@@ -53,7 +48,7 @@ namespace InventoryApi.Services
             return new ProductDto(product.Id, product.Name, product.Description, product.Price, product.StockQuantity, product.Category.Name);
         }
 
-        public async Task<bool> UpdateAsync(int id, CreateProductDto dto)
+        public async Task<bool> UpdateAsync(int id, UpdateProductDto dto)
         {
             var product = await _context.Products.FindAsync(id);
             if (product == null || !product.IsActive) return false;

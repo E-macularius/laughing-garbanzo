@@ -1,5 +1,3 @@
-using System;
-
 namespace InventoryApi.Entities
 {
     public class Product
