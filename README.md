@@ -103,3 +103,16 @@ I kept the suggested Product.CategoryId index since the Category is always retur
 - No network latency between the frontend client and backend api. I would have to add support for retries or handshakes when transmitting data if the network turns out to be inconsistent.
 - No security for our endpoints means anybody can change the database. This works for a local proof-of-concept, but a full authentication scheme with OAuth and defined roles for each of our Controllers will be necessary for Production.
 - Similarly, Production would require running everything over an encrypted HTTPS connection.
+
+---
+
+# Presentation
+
+1. Code structure and key components
+
+1. Design decisions and trade-offs
+
+1. Alternative approaches, scaling, extensibility
+    - Separate Product Counts from the Products themselves so that we can manage Product descriptions, categories, and properties separately.
+    - Add endpoints for increment/decrement, since those will be used most often by our stockers. This also keeps more of the business logic on the back end instead of having to account for them in the front end.
+    - Mobile app using the stripped down endpoints.
