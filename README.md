@@ -111,8 +111,15 @@ I kept the suggested Product.CategoryId index since the Category is always retur
 1. Code structure and key components
 
 1. Design decisions and trade-offs
+    - Controllers using interfaces to interact with the Service layer allows us to change the application logic without affecting any of the business logic in the future.
 
 1. Alternative approaches, scaling, extensibility
     - Separate Product Counts from the Products themselves so that we can manage Product descriptions, categories, and properties separately.
     - Add endpoints for increment/decrement, since those will be used most often by our stockers. This also keeps more of the business logic on the back end instead of having to account for them in the front end.
     - Mobile app using the stripped down endpoints.
+    - Functional testing for each endpoint.
+    - Document branching strategy, PR requirements.
+    - Different roles for who can Create/Update/Delete Products vs. Product Counts
+    - Migrate off of SQLite so that database is separate from the application.
+    - Seed data via external files/database bacpac
+    - Document business/functional requirements - how do our customers want to use this app?
