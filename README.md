@@ -113,8 +113,9 @@ I kept the suggested Product.CategoryId index since the Category is always retur
 1. Design decisions and trade-offs
     - Controllers using interfaces to interact with the Service layer allows us to change the application logic without affecting any of the business logic in the future.
 
-1. Alternative approaches, scaling, extensibility
+1. Alternative approaches, scaling, extensibility 
     - Separate Product Counts from the Products themselves so that we can manage Product descriptions, categories, and properties separately.
+    - Switch from Int to GUID for product IDs, to prevent confusing Products and Categories. This may result in slower writes, but most of our DB actions will be incrementing and decrementing and not adding/deleting Products and Categories.
     - Add endpoints for increment/decrement, since those will be used most often by our stockers. This also keeps more of the business logic on the back end instead of having to account for them in the front end.
     - More endpoints also allows for more granular logging. Labels can be tagged to an entire endpoint, instead of needing more logic within the Service layer to identify what type of call is being made.
     - Mobile app using the stripped down endpoints.
@@ -122,5 +123,8 @@ I kept the suggested Product.CategoryId index since the Category is always retur
     - Document branching strategy, PR requirements.
     - Different roles for who can Create/Update/Delete Products vs. Product Counts
     - Migrate off of SQLite so that database is separate from the application.
-    - Seed data via external files/database bacpac
+    - Seed data via external files/database bacpac.
+    - Which will also allow us to figure out a data backup/archive/restore strategy.
     - Document business/functional requirements - how do our customers want to use this app?
+    - Include a Revision history, either for the inventory counts or Products list or both.
+    - We'll likely need some ability to export data into reports, probably text and excel, which can be handled in its own controller.
