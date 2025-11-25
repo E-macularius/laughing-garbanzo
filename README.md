@@ -116,6 +116,7 @@ I kept the suggested Product.CategoryId index since the Category is always retur
 1. Alternative approaches, scaling, extensibility
     - Separate Product Counts from the Products themselves so that we can manage Product descriptions, categories, and properties separately.
     - Add endpoints for increment/decrement, since those will be used most often by our stockers. This also keeps more of the business logic on the back end instead of having to account for them in the front end.
+    - More endpoints also allows for more granular logging. Labels can be tagged to an entire endpoint, instead of needing more logic within the Service layer to identify what type of call is being made.
     - Mobile app using the stripped down endpoints.
     - Functional testing for each endpoint.
     - Document branching strategy, PR requirements.
