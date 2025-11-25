@@ -114,8 +114,9 @@ I kept the suggested Product.CategoryId index since the Category is always retur
     - Controllers using interfaces to interact with the Service layer allows us to change the application logic without affecting any of the business logic in the future.
 
 1. Alternative approaches, scaling, extensibility 
+    - First thing, design workshop with customers to decide how far across the supply chain this solution is going to extend.
     - Separate Product Counts from the Products themselves so that we can manage Product descriptions, categories, and properties separately.
-    - Switch from Int to GUID for product IDs, to prevent confusing Products and Categories. This may result in slower writes, but most of our DB actions will be incrementing and decrementing and not adding/deleting Products and Categories.
+    - Switch from Int to GUID for product IDs, to prevent confusing Products and Categories. This may result in slower writes, but most of our DB actions will be incrementing and decrementing and not adding/deleting Products and Categories. (or switch to SKUs, but those are not unique across businesses if we ever have multiple clients using the same database)
     - Add endpoints for increment/decrement, since those will be used most often by our stockers. This also keeps more of the business logic on the back end instead of having to account for them in the front end.
     - More endpoints also allows for more granular logging. Labels can be tagged to an entire endpoint, instead of needing more logic within the Service layer to identify what type of call is being made.
     - Mobile app using the stripped down endpoints.
@@ -128,3 +129,4 @@ I kept the suggested Product.CategoryId index since the Category is always retur
     - Document business/functional requirements - how do our customers want to use this app?
     - Include a Revision history, either for the inventory counts or Products list or both.
     - We'll likely need some ability to export data into reports, probably text and excel, which can be handled in its own controller.
+    - A module to handle currency conversions, and decide on a canonical currency internal to the system.
