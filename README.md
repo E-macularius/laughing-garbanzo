@@ -110,7 +110,7 @@ I kept the suggested Product.CategoryId index since the Category is always retur
 
 1. Code structure and key components
 
-SQLite <- Entities -> Services <- DTOs -> Controllers <- DTOs -> httpclient <- model -> Component <-> router <-> index.html
+        SQLite <- Entities -> Services <- DTOs -> Controllers <- DTOs -> httpclient <- model -> Component <-> router <-> index.html
 
 1. Design decisions and trade-offs
     - Controllers using interfaces to interact with the Service layer allows us to change the application logic without affecting any of the business logic in the future.
