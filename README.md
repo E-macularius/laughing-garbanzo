@@ -110,8 +110,14 @@ I kept the suggested Product.CategoryId index since the Category is always retur
 
 1. Code structure and key components
 
+SQLite <- Entities -> Services <- DTOs -> Controllers <- DTOs -> httpclient <- model -> Component <-> router <-> index.html
+
 1. Design decisions and trade-offs
     - Controllers using interfaces to interact with the Service layer allows us to change the application logic without affecting any of the business logic in the future.
+    - Only two entities building two tables in the database, which fits the minimal description but will be hard to add new features cleanly without refactoring.
+    - Everything is currently in the same Project for simplicity, but some functionality should be pulled out into a shared library when we start buliding new features.
+    - I did create a Solution file to account for that growth.
+    - No Repository because it wasn't going to add anything new for this project, but it does make more of the back-end tightly coupled to a single database.
 
 1. Alternative approaches, scaling, extensibility 
     - First thing, design workshop with customers to decide how far across the supply chain this solution is going to extend.
